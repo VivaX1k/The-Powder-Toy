@@ -531,7 +531,7 @@ void Air::ApproximateBlockAirMaps(Rect<int> targetBlocks)
 		// Real TTAN would only block if there was enough TTAN
 		// but it would be more expensive and complicated to actually check that
 		// so just block for a frame, if it wasn't supposed to block it will continue allowing air next frame
-		if (type == PT_TTAN || type == PT_RSSS)
+		if (type == PT_TTAN || type == PT_RSSS || type == PT_HCER || type == PT_STEL)
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
 			if (targetBlocks.Contains({ x, y }))

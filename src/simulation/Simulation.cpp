@@ -3067,7 +3067,7 @@ void SimulationImpl::MovementPhase(int i, Neighbourhood neighbourhood)
 			{
 				auto nrx = gn.nx;
 				auto nry = gn.ny;
-				if (TYP(r) == PT_CRMC)
+				if (TYP(r) == PT_CRMC || TYP(r) == PT_HCER)
 				{
 					float r = rng.between(-50, 50) * 0.01f, rx, ry, anrx, anry;
 					r = r * r * r;

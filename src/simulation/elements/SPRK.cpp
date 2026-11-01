@@ -62,13 +62,13 @@ static int update(UPDATE_FUNC_ARGS)
 
 	if (parts[i].life<=0)
 	{
-		if (ct==PT_WATR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
+		if ((ct==PT_WATR||ct==PT_SWAT)||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
 			parts[i].temp = R_TEMP + 273.15f;
 		if (ct<=0 || ct>=PT_NUM || !elements[parts[i].ctype].Enabled)
 			ct = PT_METL;
 		parts[i].ctype = PT_NONE;
 		parts[i].life = 4;
-		if (ct == PT_WATR)
+		if ((ct==PT_WATR||ct==PT_SWAT))
 			parts[i].life = 64;
 		else if (ct == PT_SLTW)
 			parts[i].life = 54;
@@ -176,7 +176,7 @@ static int update(UPDATE_FUNC_ARGS)
 					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (TYP(r)==PT_DSTW || TYP(r)==PT_SLTW || TYP(r)==PT_WATR)
+					if (TYP(r)==PT_DSTW || TYP(r)==PT_SLTW || TYP(r)==PT_WATR || TYP(r)==PT_SWAT)
 					{
 						int rndstore = sim->rng.gen()%100;
 						//@ IRON + DSTW/SLTW/WATR -> IRON + O2/H2
@@ -301,7 +301,7 @@ static int update(UPDATE_FUNC_ARGS)
 							return true;
 						return false;
 					case PT_SWCH:
-						if (receiver==PT_PSCN||receiver==PT_NSCN||receiver==PT_WATR||receiver==PT_SLTW||receiver==PT_NTCT||receiver==PT_PTCT||receiver==PT_INWR)
+						if (receiver==PT_PSCN||receiver==PT_NSCN||(receiver==PT_WATR||receiver==PT_SWAT)||receiver==PT_SLTW||receiver==PT_NTCT||receiver==PT_PTCT||receiver==PT_INWR)
 							return false;
 						break;
 					case PT_ETRD:
@@ -365,11 +365,11 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				}
 				//Yay, passed normal conduction rules, check a few last things and change receiver to spark
-				if (receiver==PT_WATR||receiver==PT_SLTW) {
+				if ((receiver==PT_WATR||receiver==PT_SWAT)||receiver==PT_SLTW) {
 					if (parts[ID(r)].life==0 && parts[i].life<3)
 					{
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
-						if (receiver==PT_WATR) parts[ID(r)].life = 6;
+						if ((receiver==PT_WATR||receiver==PT_SWAT)) parts[ID(r)].life = 6;
 						else parts[ID(r)].life = 5;
 						parts[ID(r)].ctype = receiver;
 					}

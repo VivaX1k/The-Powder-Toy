@@ -166,6 +166,7 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->create_part(ID(r), x+rx, y+ry, PT_ISOZ);
 				break;
 			case PT_TTAN:
+			case PT_STEL:
 				if (sim->rng.chance(1, 20))
 				{
 					sim->kill_part(i);

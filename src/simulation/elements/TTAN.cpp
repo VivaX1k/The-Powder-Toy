@@ -1,7 +1,7 @@
 #include "simulation/ElementCommon.h"
 #include "simulation/Air.h"
 
-static int update(UPDATE_FUNC_ARGS);
+int Element_TTAN_blockAir(UPDATE_FUNC_ARGS);
 
 void Element::Element_TTAN()
 {
@@ -43,10 +43,10 @@ void Element::Element_TTAN()
 	HighTemperature = 1941.0f;
 	HighTemperatureTransition = PT_LAVA; //@ TTAN -> LAVA(TTAN)
 
-	Update = &update;
+	Update = &Element_TTAN_blockAir;
 }
 
-static int update(UPDATE_FUNC_ARGS)
+int Element_TTAN_blockAir(UPDATE_FUNC_ARGS)
 {
 	int ttan = 0;
 	if (nt <= 2)
@@ -61,7 +61,8 @@ static int update(UPDATE_FUNC_ARGS)
 			{
 				if (!rx != !ry)
 				{
-					if (TYP(pmap[y+ry][x+rx]) == PT_TTAN)
+					auto rt = TYP(pmap[y+ry][x+rx]);
+					if (rt == PT_TTAN || rt == PT_HCER || rt == PT_STEL) // HCER and STEL share TTAN's air blocking
 						ttan++;
 				}
 			}
