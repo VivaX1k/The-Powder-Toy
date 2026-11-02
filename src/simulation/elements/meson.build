@@ -199,6 +199,8 @@ simulation_elem_names = [
 	'STEL',
 	'SWAT',
 	'HSNK',
+	'TRNS',
+	'NTRS',
 ]
 
 simulation_elem_src = []
