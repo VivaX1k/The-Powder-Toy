@@ -201,6 +201,7 @@ simulation_elem_names = [
 	'HSNK',
 	'TRNS',
 	'NTRS',
+	'HALN',
 ]
 
 simulation_elem_src = []
