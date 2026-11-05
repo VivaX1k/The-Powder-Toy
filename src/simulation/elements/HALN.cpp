@@ -2,6 +2,7 @@
 #include "HALN.h"
 
 static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
 
 void Element::Element_HALN()
 {
@@ -30,9 +31,10 @@ void Element::Element_HALN()
 	Weight = 29;         // just under WATR (30): pushes other gases and FIRE aside, rests on water
 
 	HeatConduct = 4;     // poor heat conductor, does not carry fire heat to fuel
-	Description = "Halon. Very heavy, inert gas that sinks and pools. Smothers fire. Liquefies above 25 pressure when below 67C.";
+	Description = "Halon. Very heavy, inert gas that sinks and pools. Smothers fire. Liquefies above 25 pressure when below 67C. Gas lasts 600 frames (set LIFE to 0 to keep it).";
 
-	Properties = TYPE_GAS;
+	Properties = TYPE_GAS | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC; // disappears when its life runs out
+	DefaultProperties.life = HALN_LIFETIME;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -44,6 +46,7 @@ void Element::Element_HALN()
 	HighTemperatureTransition = NT;
 
 	Update = &update;
+	Graphics = &graphics;
 }
 
 static int update(UPDATE_FUNC_ARGS)
@@ -87,6 +90,19 @@ static int update(UPDATE_FUNC_ARGS)
 			if (rt == PT_FIRE || rt == PT_CFLM)
 				sim->kill_part(ID(r));
 		}
+	}
+	return 0;
+}
+
+static int graphics(GRAPHICS_FUNC_ARGS)
+{
+	// fade out over the last 100 frames of its life
+	if (cpart->life > 0 && cpart->life < 100)
+	{
+		float f = 0.25f + 0.75f * cpart->life / 100.0f;
+		*colr = int(*colr * f);
+		*colg = int(*colg * f);
+		*colb = int(*colb * f);
 	}
 	return 0;
 }

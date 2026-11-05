@@ -54,6 +54,7 @@ static void vaporize(Simulation *sim, int i, int x, int y)
 	int amount = std::max(parts[i].tmp, 1);
 	sim->part_change_type(i, x, y, PT_HALN);
 	parts[i].tmp = amount - 1; // the rest of the gas, still to be released
+	parts[i].life = HALN_LIFETIME;  // fresh gas starts its countdown
 	sim->pv[y/CELL][x/CELL] += 0.5f;
 	Element_HALN_release(sim, i, x, y);
 }
