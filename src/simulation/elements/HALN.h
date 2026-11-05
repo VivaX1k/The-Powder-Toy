@@ -5,6 +5,9 @@ constexpr int HALN_EXPANSION = 4;                       // 1 liquid particle <->
 constexpr float HALN_LIQUEFY_PRESSURE = 25.0f;          // gas condenses at or above this pressure...
 constexpr float HALN_LIQUID_MIN_PRESSURE = 20.0f;       // ...and the liquid flashes back at or below this
 constexpr float HALN_CRITICAL_TEMP = 67.0f + 273.15f;   // above this it cannot be liquid, whatever the pressure
+#ifndef HALN_SINK_EVERY
+#define HALN_SINK_EVERY 3                               // sinks one pixel on average every this many frames
+#endif
 constexpr int HALN_LIFETIME = 600;                      // frames a HALN gas particle lasts (life 0 = never expires)
 
 #include "simulation/ElementCommon.h"

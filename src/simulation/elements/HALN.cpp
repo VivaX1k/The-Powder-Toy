@@ -13,15 +13,15 @@ void Element::Element_HALN()
 	MenuSection = SC_GAS;
 	Enabled = 1;
 
-	Advection = 0.1f;    // barely carried by air currents, so hot updrafts cannot lift it
+	Advection = 0.5f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.99f;
-	Loss = 0.80f;        // keeps its falling speed, so it pours down onto fires
+	Loss = 0.30f;
 	Collision = -0.1f;
-	Gravity = 0.4f;      // sinks much harder than CO2 (0.1)
-	Diffusion = 0.4f;
+	Gravity = 0.1f;      // the real sinking is done in update(), one pixel at a time
+	Diffusion = 0.75f;
 	HotAir = 0.000f	* CFDS;
-	Falldown = 1;
+	Falldown = 0;         // moves like a gas, not a powder
 
 	Flammable = 0;
 	Explosive = 0;
@@ -78,12 +78,25 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp > 0)
 		Element_HALN_release(sim, i, x, y);
 
-	// smother any flame touching the halon; the halon itself is never used up
-	for (auto rx = -1; rx <= 1; rx++)
+	// heavy gas: sink at most one pixel per frame. Moving it here (instead of with strong gravity)
+	// keeps it a normal drifting gas, stops it tunnelling through thin walls, and means hot
+	// updrafts above a fire cannot hold it up.
+	if (sim->gravityMode == GRAV_VERTICAL && sim->rng.chance(1, HALN_SINK_EVERY))
 	{
-		for (auto ry = -1; ry <= 1; ry++)
+		int dx = sim->rng.between(-1, 1);
+		if (!sim->do_move(i, x, y, float(x + dx), float(y + 1)) && dx)
+			sim->do_move(i, x, y, float(x), float(y + 1));
+		x = int(parts[i].x + 0.5f);
+		y = int(parts[i].y + 0.5f);
+	}
+
+	// smother any flame touching the halon; the halon itself is never used up
+	// (reaches 2 pixels, since a gas cloud is not packed solid)
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
 		{
-			if (!rx && !ry)
+			if ((!rx && !ry) || x+rx < 0 || y+ry < 0 || x+rx >= XRES || y+ry >= YRES)
 				continue;
 			auto r = pmap[y+ry][x+rx];
 			auto rt = TYP(r);
