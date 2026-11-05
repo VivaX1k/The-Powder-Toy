@@ -110,12 +110,19 @@ static int update(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	// fade out over the last 100 frames of its life
+	float f = 1.0f;
 	if (cpart->life > 0 && cpart->life < 100)
-	{
-		float f = 0.25f + 0.75f * cpart->life / 100.0f;
-		*colr = int(*colr * f);
-		*colg = int(*colg * f);
-		*colb = int(*colb * f);
-	}
+		f = 0.25f + 0.75f * cpart->life / 100.0f;
+	*colr = int(*colr * f);
+	*colg = int(*colg * f);
+	*colb = int(*colb * f);
+
+	// the same soft glowing-cloud look every other gas gets by default
+	*pixel_mode &= ~PMODE;
+	*pixel_mode |= FIRE_BLEND | DECO_FIRE;
+	*firer = *colr / 2;
+	*fireg = *colg / 2;
+	*fireb = *colb / 2;
+	*firea = int(125 * f);
 	return 0;
 }
